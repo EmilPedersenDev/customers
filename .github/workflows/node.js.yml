@@ -31,10 +31,6 @@ jobs:
     name: Deploy to Staging
     needs: [build]
     runs-on: ubuntu-latest
-    defaults:
-      run:
-      # Client folder working directory.
-        working-directory: client
     environment:
       name: Staging
     steps:
@@ -54,10 +50,6 @@ jobs:
     name: Deploy to Production
     needs: [build]
     runs-on: ubuntu-latest
-    defaults:
-      run:
-      # Client folder working directory.
-        working-directory: client
     environment:
       name: Production
     steps:
