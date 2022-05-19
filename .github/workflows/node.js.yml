@@ -31,6 +31,9 @@ jobs:
     name: Deploy to Staging
     needs: [build]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
     environment:
       name: Staging
     steps:
