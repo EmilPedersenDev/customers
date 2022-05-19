@@ -1,0 +1,65 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Compile
+        run: echo start deploy
+      
+  DeployDev:
+    name: Deploy to dev
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: Dev
+    steps:
+    - name: Deploy 
+      run: echo Deploy to Dev
+  
+  DeployStaging:
+    name: Deploy to Staging
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: Staging
+    steps:
+    - uses: actions/checkout@v3
+    - name: Deploy
+      working-directory: ./client
+      uses: xRealNeon/VuePagesAction@1.0.1
+      with:
+        username: 'EmilPedersenDev'
+        reponame: ${{ secrets.REPO_NAME }}
+        token: ${{ secrets.TOKEN }}
+      env:
+        APP_URL: ${{ secrets.APP_URL }}
+      
+      
+  DeployProduction:
+    name: Deploy to Production
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: Production
+    steps:
+    - uses: actions/checkout@v3
+    - name: Deploy
+      working-directory: ./client
+      uses: xRealNeon/VuePagesAction@1.0.1
+      with:
+        username: 'EmilPedersenDev'
+        reponame: ${{ secrets.REPO_NAME }}
+        token: ${{ secrets.TOKEN }}
+      env:
+        APP_URL: ${{ secrets.APP_URL }}
