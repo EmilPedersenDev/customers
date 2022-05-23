@@ -57,7 +57,7 @@ jobs:
         uses: crazy-max/ghaction-github-pages@v2.6.0
         with:
           repo: ${{ secrets.REPO_NAME }}
-          build_dir: ./client/dist
+          build_dir: client/dist
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           APP_URL: ${{ secrets.APP_URL }}
