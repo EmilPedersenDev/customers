@@ -58,10 +58,8 @@ jobs:
         with:
           repo: ${{ secrets.REPO_NAME }}
           build_dir: ./client/dist
-      
-
-          
-
+          token: ${{ secrets.TOKEN }}
+    
       
     
   
