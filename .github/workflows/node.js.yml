@@ -31,14 +31,14 @@ jobs:
     name: Deploy to Staging
     needs: [build]
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./client
     environment:
       name: Staging
     steps:
     - uses: actions/checkout@v3
-    - name: hi
-      working-directory: ./client
     - name: Deploy
-      working-directory: ./client
+      working-directory: ${{ env.working-directory }}
     - uses: xRealNeon/VuePagesAction@1.0.1
       with:
         username: 'EmilPedersenDev'
