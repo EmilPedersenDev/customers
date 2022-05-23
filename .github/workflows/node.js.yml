@@ -63,7 +63,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "deploy staging"
-          git push -f git@github.com:EmilPedersenDev/"$APP_URL".git main:gh-pages
+          git push -f git@github.com:EmilPedersenDev/"$APP_URL".git master:gh-pages
           
 
       
