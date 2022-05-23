@@ -3,7 +3,7 @@
     <nav>
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
-      <h1>Updating v.2 New CI/CD done!</h1>
+      <h1>Updating v.2 New CI/CD done.</h1>
     </nav>
     <router-view/>
   </div>
