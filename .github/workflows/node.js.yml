@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: client
+        working-directory: ./client
     environment: 
       name: Staging
     steps:
@@ -40,6 +40,7 @@ jobs:
         uses: actions/checkout@v3
         
       - name: Build Staging
+        working-directory: ./client
         shell: bash
         env:
           APP_URL: ${{ secrets.APP_URL }}
@@ -48,6 +49,7 @@ jobs:
           npm run build
       
       - name: init dist repo and push to gitub pages
+        working-directory: ./client
         shell: bash
         env:
           APP_URL: ${{ secrets.APP_URL }}
