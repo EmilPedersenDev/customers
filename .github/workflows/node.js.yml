@@ -36,19 +36,21 @@ jobs:
     environment: 
       name: Staging
     steps:
-      - shell: bash
-        env:
-          APP_URL: ${{ secrets.APP_URL }}
-          
       - name: Checkout
         uses: actions/checkout@v3
         
       - name: Build Staging
+      - shell: bash
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
       - run: |
           set -e
           npm run build
       
       - name: init dist repo and push to gitub pages
+      - shell: bash
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
         run: |
           cd dist
           git init
