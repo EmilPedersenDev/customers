@@ -46,7 +46,10 @@ jobs:
           APP_URL: ${{ secrets.APP_URL }}
         run: |
           set -e
+          npm install
+          echo vue installed
           npm run build
+          echo vue built
       
       - name: init dist repo and push to gitub pages
         working-directory: ./client
