@@ -10,25 +10,34 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  Build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Compile
         run: echo start deploy
-      
-  DeployDev:
-    name: Deploy to dev
-    needs: [build]
+  
+  BuildVue:
+    name: Build Vue App
+    needs: [Build]
     runs-on: ubuntu-latest
-    environment:
-      name: Dev
+    defaults:
+      run:
+        working-directory: ./client    
     steps:
-    - name: Deploy 
-      run: echo Deploy to Dev
-      
+    - name: Build Vue App
+      working-directory: ./client
+      shell: bash
+      run: |
+        set -e
+        npm install
+        echo vue installed
+        npm run build
+        echo vue built
+
   DeployStaging:
     name: Deploy to staging
+    needs: [BuildVue]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -40,20 +49,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.TOKEN }}
-        
-      - name: Build Staging
-        working-directory: ./client
-        shell: bash
-        env:
-          APP_URL: ${{ secrets.APP_URL }}
-        run: |
-          set -e
-          npm install
-          echo vue installed
-          npm run build
-          echo vue built
           
-      - name: GitHub Pages
+      - name: Staging env
         uses: crazy-max/ghaction-github-pages@v2.6.0
         with:
           repo: ${{ secrets.REPO_NAME }}
@@ -61,9 +58,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           APP_URL: ${{ secrets.APP_URL }}
-    
-      
-    
   
   #DeployStaging:
    # name: Deploy to Staging
@@ -88,7 +82,7 @@ jobs:
       
   DeployProduction:
     name: Deploy to Production
-    needs: [build]
+    needs: [Build]
     runs-on: ubuntu-latest
     environment:
       name: Production
