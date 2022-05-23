@@ -40,15 +40,15 @@ jobs:
         uses: actions/checkout@v3
         
       - name: Build Staging
-      - shell: bash
+        shell: bash
         env:
           APP_URL: ${{ secrets.APP_URL }}
-      - run: |
+        run: |
           set -e
           npm run build
       
       - name: init dist repo and push to gitub pages
-      - shell: bash
+        shell: bash
         env:
           APP_URL: ${{ secrets.APP_URL }}
         run: |
