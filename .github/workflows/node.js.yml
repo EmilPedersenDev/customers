@@ -52,20 +52,13 @@ jobs:
           echo vue installed
           npm run build
           echo vue built
+          
+      - name: GitHub Pages
+        with:
+          repo: ${{ secrets.REPO_NAME }}
+          build_dir: ./client/dist
       
-      - name: init dist repo and push to gitub pages
-        working-directory: ./client
-        shell: bash
-        env:
-          APP_URL: ${{ secrets.APP_URL }}
-        run: |
-          cd dist
-          git init
-          git add -A
-          git config --local user.email "pedersen268@gmail.com"
-          git config --local user.name "EmilPedersenDev"
-          git commit -m "deploy staging"
-          git push -f git@github.com:EmilPedersenDev/"$APP_URL".git master:gh-pages
+
           
 
       
