@@ -26,26 +26,61 @@ jobs:
     steps:
     - name: Deploy 
       run: echo Deploy to Dev
-  
+      
   DeployStaging:
-    name: Deploy to Staging
-    needs: [build]
+    name: Deploy to staging
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: client
-    environment:
+        working-directory: ./client
+    environment: 
       name: Staging
     steps:
-    - uses: actions/checkout@v3
-    - name: Deploy
-      uses: xRealNeon/VuePagesAction@1.0.1
-      with:
-        username: 'EmilPedersenDev'
-        reponame: ${{ secrets.REPO_NAME }}
-        token: ${{ secrets.TOKEN }}
-      env:
-        APP_URL: ${{ secrets.APP_URL }}
+      - shell: bash
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Build Staging
+      - run: |
+          set -e
+          npm run build
+      
+      - name: init dist repo and push to gitub pages
+        run: |
+          cd dist
+          git init
+          git add -A
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "deploy staging"
+          git push -f git@github.com:EmilPedersenDev/"$APP_URL".git main:gh-pages
+          
+
+      
+    
+  
+  #DeployStaging:
+   # name: Deploy to Staging
+    #needs: [build]
+    #runs-on: ubuntu-latest
+   # defaults:
+     # run:
+      #  working-directory: client
+    #environment:
+   #   name: Staging
+   # steps:
+   # - uses: actions/checkout@v3
+   # - name: Deploy
+   #   uses: xRealNeon/VuePagesAction@1.0.1
+   #   with:
+    #    username: 'EmilPedersenDev'
+      #  reponame: ${{ secrets.REPO_NAME }}
+      #  token: ${{ secrets.TOKEN }}
+    #  env:
+      #  APP_URL: ${{ secrets.APP_URL }}
       
       
   DeployProduction:
