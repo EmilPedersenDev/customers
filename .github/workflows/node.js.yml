@@ -58,7 +58,9 @@ jobs:
         with:
           repo: ${{ secrets.REPO_NAME }}
           build_dir: ./client/dist
-          token: ${{ secrets.TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          APP_URL: ${{ secrets.APP_URL }}
     
       
     
