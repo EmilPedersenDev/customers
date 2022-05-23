@@ -54,6 +54,7 @@ jobs:
           echo vue built
           
       - name: GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v2.6.0
         with:
           repo: ${{ secrets.REPO_NAME }}
           build_dir: ./client/dist
