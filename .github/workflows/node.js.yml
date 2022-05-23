@@ -10,25 +10,16 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  Build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Compile
         run: echo start deploy
-      
-  DeployDev:
-    name: Deploy to dev
-    needs: [build]
-    runs-on: ubuntu-latest
-    environment:
-      name: Dev
-    steps:
-    - name: Deploy 
-      run: echo Deploy to Dev
-      
+
   DeployStaging:
-    name: Deploy to staging
+    name: Deploy to Staging
+    needs: [Build]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -36,12 +27,12 @@ jobs:
     environment: 
       name: Staging
     steps:
-      - name: Checkout
+      - name: Checkout Repo
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.TOKEN }}
-        
-      - name: Build Staging
+          
+      - name: Build Vue App
         working-directory: ./client
         shell: bash
         env:
@@ -53,52 +44,47 @@ jobs:
           npm run build
           echo vue built
           
-      - name: GitHub Pages
+      - name: Publish Staging Env
         uses: crazy-max/ghaction-github-pages@v2.6.0
         with:
-          repo: EmilPedersenDev/customers-staging
+          repo: ${{ secrets.REPO_NAME }}
           build_dir: ./client/dist
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           APP_URL: ${{ secrets.APP_URL }}
-    
-      
-    
-  
-  #DeployStaging:
-   # name: Deploy to Staging
-    #needs: [build]
-    #runs-on: ubuntu-latest
-   # defaults:
-     # run:
-      #  working-directory: client
-    #environment:
-   #   name: Staging
-   # steps:
-   # - uses: actions/checkout@v3
-   # - name: Deploy
-   #   uses: xRealNeon/VuePagesAction@1.0.1
-   #   with:
-    #    username: 'EmilPedersenDev'
-      #  reponame: ${{ secrets.REPO_NAME }}
-      #  token: ${{ secrets.TOKEN }}
-    #  env:
-      #  APP_URL: ${{ secrets.APP_URL }}
-      
-      
+          
   DeployProduction:
     name: Deploy to Production
-    needs: [build]
+    needs: [DeployStaging]
     runs-on: ubuntu-latest
-    environment:
+    defaults:
+      run:
+        working-directory: ./client
+    environment: 
       name: Production
     steps:
-    - uses: actions/checkout@v3
-    - name: Deploy
-      uses: xRealNeon/VuePagesAction@1.0.1
-      with:
-        username: 'EmilPedersenDev'
-        reponame: ${{ secrets.REPO_NAME }}
-        token: ${{ secrets.TOKEN }}
-      env:
-        APP_URL: ${{ secrets.APP_URL }}
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.TOKEN }}
+
+      - name: Build Vue App
+        working-directory: ./client
+        shell: bash
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+        run: |
+          set -e
+          npm install
+          echo vue installed
+          npm run build
+          echo vue built
+
+      - name: Publish Staging Env
+        uses: crazy-max/ghaction-github-pages@v2.6.0
+        with:
+          repo: ${{ secrets.REPO_NAME }}
+          build_dir: ./client/dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          APP_URL: ${{ secrets.APP_URL }}
