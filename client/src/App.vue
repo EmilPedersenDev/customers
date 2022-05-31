@@ -5,28 +5,29 @@
       <router-link to="/about">About</router-link>
       <h1>Updating v.2 New CI/CD done.</h1>
       <p>Testing pr only on merge to master!</p>
+      <v-btn @click="getCustomers">Get Customers</v-btn>
     </nav>
     <router-view />
   </div>
 </template>
 
 <script>
-// import { api } from "@/service/api.js";
+import { api } from "@/service/api.js";
 
 export default {
-  // created() {
-  //   this.getUsers();
-  // },
-  // methods: {
-  //   async getUsers() {
-  //     try {
-  //       const { data } = await api.get("/user");
-  //       console.log(data);
-  //     } catch (error) {
-  //       console.error(error.message);
-  //     }
-  //   },
-  // },
+  methods: {
+    async getCustomers() {
+      try {
+        const { data } = await api.get("/user");
+        console.log(data);
+      } catch (error) {
+        console.error(error.message);
+      }
+    },
+    onClick() {
+      console.log("click");
+    },
+  },
 };
 </script>
 
@@ -37,6 +38,10 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+
+  .v-btn {
+    margin-top: 1.5rem;
+  }
 }
 
 nav {
