@@ -6,9 +6,29 @@
       <h1>Updating v.2 New CI/CD done.</h1>
       <p>Testing pr only on merge to master!</p>
     </nav>
-    <router-view/>
+    <router-view />
   </div>
 </template>
+
+<script>
+// import { api } from "@/service/api.js";
+
+export default {
+  // created() {
+  //   this.getUsers();
+  // },
+  // methods: {
+  //   async getUsers() {
+  //     try {
+  //       const { data } = await api.get("/user");
+  //       console.log(data);
+  //     } catch (error) {
+  //       console.error(error.message);
+  //     }
+  //   },
+  // },
+};
+</script>
 
 <style lang="scss">
 #app {
