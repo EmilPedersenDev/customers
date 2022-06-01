@@ -3,9 +3,34 @@
     <nav>
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
-      <h1>Updating v.2 New CI/CD done.</h1>
-      <p>Testing pr only on merge to master!</p>
-      <v-btn @click="getCustomers">Get Customers</v-btn>
+      <div class="user-form">
+        <h1>Post User</h1>
+        <form @submit.prevent="submit">
+          <v-text-field
+            label="First name"
+            hide-details="auto"
+            v-model="model.firstname"
+          ></v-text-field>
+          <v-text-field
+            label="Last name"
+            hide-details="auto"
+            v-model="model.lastname"
+          ></v-text-field>
+          <v-text-field
+            label="Email"
+            hide-details="auto"
+            v-model="model.email"
+            type="email"
+          ></v-text-field>
+          <v-text-field
+            label="Password"
+            hide-details="auto"
+            type="password"
+            v-model="model.password"
+          ></v-text-field>
+          <v-btn class="mr-4" type="submit"> submit </v-btn>
+        </form>
+      </div>
     </nav>
     <router-view />
   </div>
@@ -15,17 +40,24 @@
 import { api } from "@/service/api.js";
 
 export default {
+  data() {
+    return {
+      model: {
+        firstname: "",
+        lastname: "",
+        email: "",
+        password: "",
+      },
+    };
+  },
   methods: {
-    async getCustomers() {
+    async submit() {
       try {
-        const { data } = await api.get("/user");
-        console.log(data);
+        const { data } = await api.post("/user", this.model);
+        console.log("user -->", data);
       } catch (error) {
-        console.error(error.message);
+        console.error(error);
       }
-    },
-    onClick() {
-      console.log("click");
     },
   },
 };
@@ -38,6 +70,12 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+
+  .user-form {
+    width: 100%;
+    max-width: 700px;
+    margin: 50px auto;
+  }
 
   .v-btn {
     margin-top: 1.5rem;
