@@ -53,6 +53,14 @@ jobs:
           APP_URL: ${{ secrets.APP_URL }}
           VUE_APP_API_URL: ${{ secrets.VUE_APP_API_URL }}
           
+      - name: Publish to heroku staging app
+        uses: AkhileshNS/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: customers-staging
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          appdir: server
+          
   DeployProduction:
     name: Deploy to Production
     needs: [DeployStaging]
