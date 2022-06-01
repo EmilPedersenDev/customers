@@ -50,6 +50,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           APP_URL: ${{ secrets.APP_URL }}
+          VUE_APP_API_URL: ${{ secrets.VUE_APP_API_URL }}
           
   DeployProduction:
     name: Deploy to Production
@@ -86,3 +87,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           APP_URL: ${{ secrets.APP_URL }}
+          VUE_APP_API_URL: ${{ secrets.VUE_APP_API_URL }}
