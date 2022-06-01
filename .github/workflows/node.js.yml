@@ -35,6 +35,7 @@ jobs:
         shell: bash
         env:
           APP_URL: ${{ secrets.APP_URL }}
+          VUE_APP_API_URL: ${{ secrets.VUE_APP_API_URL }}
         run: |
           set -e
           npm install
@@ -72,6 +73,7 @@ jobs:
         shell: bash
         env:
           APP_URL: ${{ secrets.APP_URL }}
+          VUE_APP_API_URL: ${{ secrets.VUE_APP_API_URL }}
         run: |
           set -e
           npm install
