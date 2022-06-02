@@ -72,7 +72,6 @@ export default {
     async getUsers() {
       try {
         const { data } = await api.get("/user");
-        debugger;
         this.users = data;
       } catch (error) {
         console.error(error);
