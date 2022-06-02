@@ -31,6 +31,14 @@
           <v-btn class="mr-4" type="submit"> submit </v-btn>
         </form>
       </div>
+      <div class="user-listing">
+        <v-data-table
+          :headers="userHeaders"
+          :items="users"
+          :items-per-page="5"
+          class="elevation-1"
+        ></v-data-table>
+      </div>
     </nav>
     <router-view />
   </div>
@@ -48,9 +56,28 @@ export default {
         email: "",
         password: "",
       },
+      userHeaders: [
+        { text: "Id", value: "id" },
+        { text: "First Name", value: "firstName" },
+        { text: "Last Name", value: "lastName" },
+        { text: "Email", value: "email" },
+      ],
+      users: [],
     };
   },
+  created() {
+    this.getUsers();
+  },
   methods: {
+    async getUsers() {
+      try {
+        const { data } = await api.get("/user");
+        debugger;
+        this.users = data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
     async submit() {
       try {
         const { data } = await api.post("/user", this.model);
@@ -75,6 +102,11 @@ export default {
     width: 100%;
     max-width: 700px;
     margin: 50px auto;
+  }
+
+  .user-listing {
+    max-width: 700px;
+    margin: 0 auto;
   }
 
   .v-btn {
