@@ -1,88 +1,48 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-      <div class="user-form">
-        <h1>Post User</h1>
-        <form @submit.prevent="submit">
-          <v-text-field
-            label="First name"
-            hide-details="auto"
-            v-model="model.firstname"
-          ></v-text-field>
-          <v-text-field
-            label="Last name"
-            hide-details="auto"
-            v-model="model.lastname"
-          ></v-text-field>
-          <v-text-field
-            label="Email"
-            hide-details="auto"
-            v-model="model.email"
-            type="email"
-          ></v-text-field>
-          <v-text-field
-            label="Password"
-            hide-details="auto"
-            type="password"
-            v-model="model.password"
-          ></v-text-field>
-          <v-btn class="mr-4" type="submit"> submit </v-btn>
-        </form>
-      </div>
-      <div class="user-listing">
-        <v-data-table
-          :headers="userHeaders"
-          :items="users"
-          :items-per-page="5"
-          class="elevation-1"
-        ></v-data-table>
-      </div>
-    </nav>
-    <router-view />
+    <navbar
+      :navbarFullscreen="navbarFullscreen"
+      @toggle-navbar="onToggleNavbar"
+    />
+    <div class="container">
+      <router-view />
+    </div>
   </div>
 </template>
 
 <script>
-import { api } from "@/service/api.js";
-
+import { mapActions } from "vuex";
+import Navbar from "./components/Navbar.vue";
 export default {
+  name: "App",
+  components: {
+    Navbar,
+  },
   data() {
     return {
-      model: {
-        firstname: "",
-        lastname: "",
-        email: "",
-        password: "",
-      },
-      userHeaders: [
-        { text: "Id", value: "id" },
-        { text: "First Name", value: "firstName" },
-        { text: "Last Name", value: "lastName" },
-        { text: "Email", value: "email" },
-      ],
-      users: [],
+      navbarFullscreen: false,
     };
   },
-  created() {
-    this.getUsers();
+  async created() {
+    try {
+      await this.getUser();
+    } catch (err) {
+      // If user is unathenticated
+      // send to login page
+      if (err.response.status === 403 && this.$route.path !== "/login") {
+        this.$router.push("/login");
+      }
+    }
   },
   methods: {
-    async getUsers() {
-      try {
-        const { data } = await api.get("/user");
-        this.users = data;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async submit() {
-      try {
-        const { data } = await api.post("/user", this.model);
-        console.log("user -->", data);
-      } catch (error) {
-        console.error(error);
+    ...mapActions(["getUser"]),
+    onToggleNavbar(showNavbar) {
+      this.navbarFullscreen = showNavbar;
+
+      const bodyEl = document.querySelector("body");
+
+      if (bodyEl) {
+        bodyEl.classList.toggle("hide-scroll", showNavbar);
       }
     },
   },
@@ -96,33 +56,12 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  min-height: 100vh;
 
-  .user-form {
-    width: 100%;
-    max-width: 700px;
-    margin: 50px auto;
-  }
-
-  .user-listing {
-    max-width: 700px;
-    margin: 0 auto;
-  }
-
-  .v-btn {
-    margin-top: 1.5rem;
-  }
-}
-
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  .container {
+    padding: 3rem 0.75rem;
+    min-height: calc(100vh - 3.75rem);
+    position: relative;
   }
 }
 </style>
