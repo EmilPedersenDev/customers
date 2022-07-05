@@ -34,7 +34,7 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/Login.vue"),
     beforeEnter: (to, from, next) => {
-      if (!store.getters.isLoggedIn) {
+      if (!store.getters.getId) {
         next();
       } else {
         next("/");
@@ -48,12 +48,11 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (store.getters.isLoggedIn) {
-      next();
-    } else {
-      next({ name: "login" });
-    }
+  if (
+    to.matched.some((record) => record.meta.requiresAuth) &&
+    !store.getters.getId
+  ) {
+    next({ name: "login" });
   } else {
     next();
   }

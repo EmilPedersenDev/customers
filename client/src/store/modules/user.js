@@ -15,13 +15,10 @@ export default {
           if (data) {
             commit("setUser", data);
           }
-
-          if (!getters.isLoggedIn) {
-            commit("setLoggedIn", "jdufg");
-          }
         })
         .catch((err) => {
-          commit("setLoggedIn", "");
+          commit("setId", "");
+          commit("setExp", "");
           throw err;
         });
     },

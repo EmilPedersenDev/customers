@@ -27,11 +27,7 @@ export default {
     try {
       await this.getUser();
     } catch (err) {
-      // If user is unathenticated
-      // send to login page
-      if (err.response.status === 403 && this.$route.path !== "/login") {
-        this.$router.push("/login");
-      }
+      console.error(err);
     }
   },
   methods: {

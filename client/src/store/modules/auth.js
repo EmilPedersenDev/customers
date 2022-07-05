@@ -1,16 +1,30 @@
 export default {
   state: () => ({
-    isLoggedIn: localStorage.getItem(process.env.VUE_APP_LOGGED_IN) || "",
+    id: localStorage.getItem("id") || "",
+    exp: localStorage.getItem("exp") || "",
   }),
   mutations: {
-    setLoggedIn: (state, payload) => {
-      localStorage.setItem(process.env.VUE_APP_LOGGED_IN, payload);
-      state.isLoggedIn = payload;
+    setId: (state, payload) => {
+      localStorage.setItem("id", payload);
+      if (!payload) {
+        localStorage.removeItem("id");
+      }
+      state.id = payload;
+    },
+    setExp: (state, payload) => {
+      localStorage.setItem("exp", payload);
+      if (!payload) {
+        localStorage.removeItem("exp");
+      }
+      state.exp = payload;
     },
   },
   getters: {
-    isLoggedIn: (state) => {
-      return state.isLoggedIn;
+    getId: (state) => {
+      return state.id;
+    },
+    getExp: (state) => {
+      return state.exp;
     },
   },
 };
