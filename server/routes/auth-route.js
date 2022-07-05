@@ -1,6 +1,15 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const {
+  validatePassword,
+  newToken,
+  newPassword,
+  verifyRefreshToken,
+  clearCookies,
+} = require("../service/auth-service");
+const { getUser } = require("../service/user-service");
 const { User } = require("../models");
+const { week, month } = require("../common/index");
 
 module.exports = (app) => {
   app.post("/register", async (req, res) => {
@@ -11,7 +20,9 @@ module.exports = (app) => {
         throw new Error("Missing user information");
       }
 
-      const user = await User.findOne({ where: { email: email } });
+      const user = await User.findOne({
+        where: { email: email },
+      });
 
       if (user) {
         throw new Error("User already exists");
@@ -20,26 +31,12 @@ module.exports = (app) => {
       const salt = await bcrypt.genSalt(10);
       const newPassword = await bcrypt.hash(password, salt);
 
-      await User.create({
-        firstName: firstname,
-        lastName: lastname,
-        email: email,
-        password: newPassword,
-      });
-
       return res.status(200).json({
         message: "User created!",
       });
     } catch (err) {
       res.status(500).json(err.message);
     }
-  });
-
-  app.get("/setcookie", (req, res) => {
-    res.cookie(`Cookie token name`, `encrypted cookie string Value`, {
-      httpOnly: true,
-    });
-    res.send("Cookie have been saved successfully");
   });
 
   app.post("/login", async (req, res) => {
@@ -50,21 +47,18 @@ module.exports = (app) => {
         throw new Error("No email or password provided");
       }
 
-      const user = await User.findOne({ where: { email: email } });
+      const user = await getUser("email", email, false);
 
-      if (!user) {
-        throw new Error("No user with that email");
-      }
+      await validatePassword(password, user.password);
 
-      const validPassword = await bcrypt.compare(password, user.password);
+      const accesToken = newToken({ id: user.id }, "10000");
 
-      if (!validPassword) {
-        throw new Error("Wrong password");
-      }
+      const refreshToken = newToken({ id: user.id }, "20000");
 
-      const token = jwt.sign({ id: user.id }, process.env.SECRET, {
-        expiresIn: 86400, // 24 hrs
-      });
+      const accessTokenResponse = Buffer.from(
+        accesToken.split(".")[1],
+        "base64"
+      ).toString();
 
       const userResponse = {
         id: user.id,
@@ -73,12 +67,46 @@ module.exports = (app) => {
         lastName: user.lastName,
       };
 
-      const hour = 3600000;
-      const week = 7 * 24 * hour;
+      return res
+        .status(200)
+        .cookie("access_token", accesToken, {
+          httpOnly: true,
+          path: "/",
+          maxAge: week,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+        })
+        .cookie("refresh_token", refreshToken, {
+          httpOnly: true,
+          path: "/",
+          maxAge: month,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+        })
+        .send({
+          user: userResponse,
+          claims: accessTokenResponse,
+          message: "Logged in successfully",
+        });
+    } catch (err) {
+      res.status(500).json(err.message);
+    }
+  });
+
+  app.get("/refresh-token", async (req, res) => {
+    try {
+      const verifiedRefreshToken = await verifyRefreshToken(req, res);
+      const user = await getUser("id", verifiedRefreshToken.id);
+      const accesToken = newToken({ id: user.id }, "10000");
+
+      const accessTokenResponse = Buffer.from(
+        accesToken.split(".")[1],
+        "base64"
+      ).toString();
 
       return res
         .status(200)
-        .cookie("access_token", token, {
+        .cookie("access_token", accesToken, {
           httpOnly: true,
           path: "/",
           maxAge: week,
@@ -86,11 +114,11 @@ module.exports = (app) => {
           secure: process.env.NODE_ENV === "production",
         })
         .send({
-          user: userResponse,
-          message: "Logged in successfully",
+          claims: accessTokenResponse,
+          message: "Access token created succesfully",
         });
     } catch (err) {
-      res.status(500).json(err.message);
+      clearCookies(res);
     }
   });
 };

@@ -48,19 +48,19 @@ export default {
     },
   },
   created() {
-    if (this.isLoggedIn) {
+    if (this.getId) {
       this.$router.push("/");
     }
   },
   watch: {
-    isLoggedIn(val) {
+    getId(val) {
       if (val) {
         this.$router.push("/");
       }
     },
   },
   computed: {
-    ...mapGetters(["isLoggedIn"]),
+    ...mapGetters(["getId"]),
     passwordErrors() {
       const errors = [];
       if (!this.$v.user.password.$dirty) return errors;
@@ -77,15 +77,24 @@ export default {
   },
   methods: {
     ...mapActions(["setUser"]),
-    ...mapMutations(["setLoggedIn"]),
+    ...mapMutations(["setId", "setExp"]),
     async onSubmit() {
       this.$v.$touch();
       try {
         const { data } = await api.post("/login", this.user);
+
         if (data.user) {
-          this.setLoggedIn("vkallv");
           this.setUser(data.user);
         }
+
+        // If we get an acess token in response, set
+        // the claims to the store
+        if (data.claims) {
+          const { id, exp } = JSON.parse(data.claims);
+          this.setId(id);
+          this.setExp(exp);
+        }
+
         this.$router.push("/");
       } catch (err) {
         console.error(err);
